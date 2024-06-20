@@ -37,12 +37,41 @@ private:
 
 	
 	// opcodes functions
+	//void opCode_0NNN(); ignore this 
 	void opCode_00E0();// Clear Screen
+	void opCode_00EE();
 	void opCode_1NNN();	// Jump
+	void opCode_2NNN(); // Execute subroutine starting at adress NNN
+	void opCode_3XNN();
+	void opCode_4XNN();
+	void opCode_5XY0();
 	void opCode_6XNN();	// Set register VX
 	void opCode_7XNN();	// Add value to register VX
+	void opCode_8XY0();
+	void opCode_8XY1();
+	void opCode_8XY2();
+	void opCode_8XY3();
+	void opCode_8XY4();
+	void opCode_8XY5();
+	void opCode_8XY6();
+	void opCode_8XY7();
+	void opCode_8XYE();
+	void opCode_9XY0();
 	void opCode_ANNN();	// Set index register I
+	void opCode_BNNN();
+	void opCode_CXNN();
 	void opCode_DXYN();	// Display/draw
+	void opCode_EX9E();
+	void opCode_EXA1();
+	void opCode_FX07();
+	void opCode_FX0A();
+	void opCode_FX15();
+	void opCode_FX18();
+	void opCode_FX1E();
+	void opCode_FX29();
+	void opCode_FX33();
+	void opCode_FX55();
+	void opCode_FX65();
 
 	//
 	void updateTimers();

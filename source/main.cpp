@@ -15,7 +15,7 @@ int main(int argc, char* argv[]) {
 
     disp.init();
 
-    std::string romPath = "C:\\Users\\mertc\\source\\IBM_Logo.ch8";
+    std::string romPath = "C:\\Users\\mertc\\source\\4-flags.ch8";
     int cycleDelay = 1;
     // Main loop flag
     bool quit = false;
@@ -46,27 +46,25 @@ int main(int argc, char* argv[]) {
         if (chip.delayTimer > 0){--chip.delayTimer;}
         if (chip.soundTimer > 0){--chip.soundTimer;}
 
-       
+        
         bool timeFlag = false;
         if (dt > cycleDelay)
         {
             lastCycleTime = currentTime;
 
             chip.emulateCycle();
-            timeFlag = true;
         }
-
         
-        if (chip.drawFlag && timeFlag) 
+        chip.emulateCycle();
+        if (chip.drawFlag) 
         {            
             disp.drawGraphics(chip.gfx);
             chip.drawFlag = false;
-            timeFlag = false;
         }
         
          
         // Delay to control frame rate
-        SDL_Delay(1000 / 60);
+        //SDL_Delay(1000 / 6000);
 
       
     }

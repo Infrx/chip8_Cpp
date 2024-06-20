@@ -53,7 +53,7 @@ void chip8::emulateCycle()
 					opCode_00E0();
 					break;
 				case 0x00EE:// 00EE
-					//call function
+					opCode_00EE();
 					break;
 				default:// 0NNN
 					//call function
@@ -64,16 +64,16 @@ void chip8::emulateCycle()
 			opCode_1NNN();
 			break;
 		case 0x2000:// 2NNN
-			//call function
+			opCode_2NNN();
 			break;
 		case 0x3000:// 3XNN
-			//call function
+			opCode_3XNN();
 			break;
 		case 0x4000:// 4XNN
-			//call function
+			opCode_4XNN();
 			break;
 		case 0x5000:// 5XY0
-			//call function
+			opCode_5XY0();
 			break;
 		case 0x6000:// 6XNN
 			opCode_6XNN();
@@ -82,16 +82,16 @@ void chip8::emulateCycle()
 			opCode_7XNN();
 			break;
 		case 0x9000:// 9XY0
-			//call function
+			opCode_9XY0();
 			break;
 		case 0xA000:// ANNN
 			opCode_ANNN();
 			break;
 		case 0xB000:// BNNN
-			//call function
+			opCode_BNNN();
 			break;
 		case 0xC000:// ANNN
-			//call function
+			opCode_ANNN();
 			break;
 		case 0xD000:// DXYN
 			opCode_DXYN();
@@ -100,10 +100,10 @@ void chip8::emulateCycle()
 			switch (opcode & 0x000F)
 			{
 				case 0x000E:// EX9E
-					//call function
+					opCode_EX9E();
 					break;
 				case 0x0001:// EXA1
-					//call function
+					opCode_EXA1();
 					break;
 			}
 			break;
@@ -113,31 +113,31 @@ void chip8::emulateCycle()
 			switch (opcode & 0x000F)
 			{
 				case 0x0000:// 8XY0
-					//call function
+					opCode_8XY0();
 					break;
 				case 0x0001:// 8XY1
-					//call function
+					opCode_8XY1();
 					break;
 				case 0x0002:// 8XY2
-					//call function
+					opCode_8XY2();
 					break;
 				case 0x0003:// 8XY3
-					//call function
+					opCode_8XY3();
 					break;
 				case 0x0004:// 8XY4
-					//call function
+					opCode_8XY4();
 					break;
 				case 0x0005:// 8XY5
-					//call function
+					opCode_8XY5();
 					break;
 				case 0x0006:// 8XY6
-					//call function
+					opCode_8XY6();
 					break;
 				case 0x0007:// 8XY7
-					//call function
+					opCode_8XY7();
 					break;
 				case 0x000E:// 8XYE
-					//call function
+					opCode_8XYE();
 					break;
 			}
 			break;
@@ -145,31 +145,31 @@ void chip8::emulateCycle()
 			switch(opcode & 0x00FF)
 			{
 				case 0x0007: // FX07
-					//call function
+					opCode_FX07();
 					break;
 				case 0x000A: // FX0A
-					//call function
+					opCode_FX0A();
 					break;
 				case 0x0015: // FX15
-					//call function
+					opCode_FX15();
 					break;
 				case 0x0018: // FX18
-					//call function
+					opCode_FX18();
 					break;
 				case 0x001E: // FX1E
-					//call function
+					opCode_FX1E();
 					break;
 				case 0x0029: // FX29
-					//call function
+					opCode_FX29();
 					break;
 				case 0x0033: // FX33
-					//call function
+					opCode_FX33();
 					break;
 				case 0x0055: // FX55
-					//call function
+					opCode_FX55();
 					break;
 				case 0x0065: // FX65
-					//call function
+					opCode_FX65();
 					break;
 			}
 			break;
@@ -210,15 +210,53 @@ bool chip8::loadROM(const std::string& romPath) {
 }
 
 
+/*void chip8::opCode_0NNN() // ignore this 
+{
+}*/
+
 void chip8::opCode_00E0()     // pass your own pixel to display instead of vice versa
 {
 	memset(gfx, 0, sizeof(gfx));
 }
 
+void chip8::opCode_00EE()
+{
+	--sp;
+	pc = stack[sp];
+}
+
 void chip8::opCode_1NNN()
 {
-	// jump to adress NNN
+	// jump to address NNN
 	pc = opcode & 0x0FFF;
+}
+
+void chip8::opCode_2NNN()
+{
+	stack[sp] = pc;
+	++sp;
+	pc = opcode & 0x0FFF;
+}
+
+void chip8::opCode_3XNN()
+{
+	uint8_t i = (opcode & 0x0F00) >> 8;
+	uint8_t n = (opcode & 0x00FF);
+	if (V[i] == n) { pc += 2; }	
+}
+
+void chip8::opCode_4XNN()
+{
+	uint8_t i = (opcode & 0x0F00) >> 8;
+	uint8_t n = (opcode & 0x00FF);
+	if (V[i] != n) { pc += 2; }
+}
+
+void chip8::opCode_5XY0()
+{
+	uint8_t iX = (opcode & 0x0F00) >> 8;
+	uint8_t iY = (opcode & 0x00F0) >> 4;
+	if (V[iX] == V[iY]) { pc += 2; }
 }
 
 void chip8::opCode_6XNN()
@@ -238,10 +276,102 @@ void chip8::opCode_7XNN()
 	V[i] = V[i] + (opcode & 0x00FF);
 }
 
+void chip8::opCode_8XY0()
+{
+	uint8_t iX = (opcode & 0x0F00) >> 8;
+	uint8_t iY = (opcode & 0x00F0) >> 4;
+	V[iX] = V[iY];
+}
+
+void chip8::opCode_8XY1()
+{
+	uint8_t iX = (opcode & 0x0F00) >> 8;
+	uint8_t iY = (opcode & 0x00F0) >> 4;
+	V[iX] = (V[iX] | V[iY]);
+}
+
+void chip8::opCode_8XY2()
+{
+	uint8_t iX = (opcode & 0x0F00) >> 8;
+	uint8_t iY = (opcode & 0x00F0) >> 4;
+	V[iX] = (V[iX] & V[iY]);
+}
+
+void chip8::opCode_8XY3()
+{
+	uint8_t iX = (opcode & 0x0F00) >> 8;
+	uint8_t iY = (opcode & 0x00F0) >> 4;
+	V[iX] = (V[iX] ^ V[iY]);
+}
+
+void chip8::opCode_8XY4()
+{
+	uint8_t iX = (opcode & 0x0F00) >> 8;
+	uint8_t iY = (opcode & 0x00F0) >> 4;
+	uint16_t sum = V[iX] + V[iY];
+	
+	if (sum > 255) { V[0xF] = 0x01; } //check 8bit overflow
+	else { V[0xF] = 0x00;}
+
+	V[iX] = sum & 0xFFu; // 0xFF is 255
+}
+
+void chip8::opCode_8XY5()
+{
+	uint8_t iX = (opcode & 0x0F00) >> 8;
+	uint8_t iY = (opcode & 0x00F0) >> 4;
+
+	if (V[iX] < V[iY]) { V[0xF] = 0x00; }
+	else { V[0xF] = 1; }
+
+	V[iX] -= V[iY];
+}
+
+void chip8::opCode_8XY6()
+{
+	uint8_t iX = (opcode & 0x0F00) >> 8;
+	uint8_t iY = (opcode & 0x00F0) >> 4;
+
+	V[iX] = V[iY] >> 1;
+	V[0xF] = V[iY] << 3;
+}
+
+void chip8::opCode_8XY7()
+{
+	uint8_t iX = (opcode & 0x0F00) >> 8;
+	uint8_t iY = (opcode & 0x00F0) >> 4;
+
+	if (V[iY] < V[iX]) { V[0xF] = 0x00; }
+	else { V[0xF] = 1; }
+
+	V[iX] = V[iY] - V[iX];
+}
+
+void chip8::opCode_8XYE()
+{
+	uint8_t iX = (opcode & 0x0F00) >> 8;
+	uint8_t iY = (opcode & 0x00F0) >> 4;
+
+	V[iX] = V[iY] << 1;
+	V[0xF] = V[iY] << 3;
+}
+
+void chip8::opCode_9XY0()
+{
+}
+
 void chip8::opCode_ANNN()
 {
 	// Store memoory address NNN in register I
 	I = opcode & 0x0FFF;
+}
+
+void chip8::opCode_BNNN()
+{
+}
+
+void chip8::opCode_CXNN()
+{
 }
 
 void chip8::opCode_DXYN()
@@ -275,8 +405,6 @@ void chip8::opCode_DXYN()
 				if (gfx[pixelIndex] == 0xFFFFFFFF)
 					V[0xF] = 1;
 				gfx[pixelIndex] ^= 0xFFFFFFFF;
-				std::cout << "Drawing pixel at (" << x << ", " << y << ")\n";
-				std::cout << "Pixel data at index: " << pixelIndex << " is now: " << gfx[pixelIndex] << std::endl;
 			}
 		}
 	}
@@ -284,9 +412,77 @@ void chip8::opCode_DXYN()
 
 }
 
+void chip8::opCode_EX9E()
+{
+}
+
+void chip8::opCode_EXA1()
+{
+}
+
+void chip8::opCode_FX07()
+{
+}
+
+void chip8::opCode_FX0A()
+{
+}
+
+void chip8::opCode_FX15()
+{
+}
+
+void chip8::opCode_FX18()
+{
+}
+
+void chip8::opCode_FX1E()
+{
+	uint8_t iX = (opcode & 0x0F00) >> 8;
+	I += V[iX];
+}
+
+void chip8::opCode_FX29()
+{
+}
+
+void chip8::opCode_FX33()
+{
+	uint8_t iX = (opcode & 0x0F00) >> 8;
+
+	memory[I] = V[iX] / 100;
+	memory[I + 1] = (V[iX] / 10) % 10;
+	memory[I + 2] = V[iX] % 10;
+}
+
+void chip8::opCode_FX55()
+{
+	uint8_t iX = (opcode & 0x0F00) >> 8;
+	for (uint8_t i = 0; i <= iX; i++)
+	{
+		memory[I] = V[i];
+		++I;  
+		// I is set to I + X + 1 after operation
+
+	}
+	
+}
+
+void chip8::opCode_FX65()
+{
+	uint8_t iX = (opcode & 0x0F00) >> 8;
+	for (uint8_t i = 0; i <= iX; i++)
+	{
+		V[i] = memory[I];
+		++I;
+		// I is set to I + X + 1 after operation
+	}
+	
+}
+
 void chip8::updateTimers()
 {
-
+	
 }
 
 #endif
