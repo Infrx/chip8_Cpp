@@ -1,4 +1,6 @@
-#pragma once
+#ifndef DISPLAY_H
+#define DISPLAY_H
+
 #include <SDL.h>
 #include <iostream>
 #include <cstring>
@@ -13,7 +15,7 @@ class display
 public:
 	bool init();
 	void close();
-	void drawGraphics(uint32_t* pixels);
+	void drawGraphics(const uint32_t* pixels);
 	//void clear();
 	// SDL related variables
 	SDL_Window* window = nullptr;
@@ -24,3 +26,5 @@ public:
 
 	//functions
 };
+
+#endif

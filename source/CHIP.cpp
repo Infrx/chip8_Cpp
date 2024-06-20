@@ -1,3 +1,7 @@
+#ifndef CHIP_CPP
+#define CHIP_CPP
+#include<fstream>
+
 #include <CHIP.h>
 
 uint8_t fontset[FONTSET_SIZE] =
@@ -34,7 +38,8 @@ void chip8::emulateCycle()
 {
 	// Fetch Opcode
 	opcode = memory[pc] << 8 | memory[pc + 1]; // stores 2 subsequent memory adress
-
+	pc += 2;
+	//
 	// Decode Opcode - Use Switch statements and dont forget to add break after each opcode is executed
 
 	switch (opcode & 0xF000)	// Check first nibble
@@ -89,7 +94,7 @@ void chip8::emulateCycle()
 			//call function
 			break;
 		case 0xD000:// DXYN
-			void opCode_DXYN();
+			opCode_DXYN();
 			break;
 		case 0xE000:// EX9E or EXA1
 			switch (opcode & 0x000F)
@@ -181,21 +186,39 @@ void chip8::emulateCycle()
 	// Update timers
 }
 
+bool chip8::loadROM(const std::string& romPath) {
+	std::ifstream rom(romPath, std::ios::binary | std::ios::ate);
+	if (!rom.is_open()) {
+		std::cerr << "Failed to open ROM: " << romPath << std::endl;
+		return false;
+	}
+
+	std::streampos size = rom.tellg(); // Get the size of the ROM
+	rom.seekg(0, std::ios::beg); // Seek to the beginning of the ROM
+
+	// Check if ROM size fits in memory (0x200 to 0xFFF)
+	if (size > (4096 - 512)) {
+		std::cerr << "ROM size exceeds Chip-8 memory capacity." << std::endl;
+		return false;
+	}
+
+	rom.read(reinterpret_cast<char*>(memory + 512), size); // Load ROM into memory starting at 0x200
+	rom.close();
+
+	std::cout << "Loaded ROM: " << romPath << " (" << size << " bytes)" << std::endl;
+	return true;
+}
 
 
 void chip8::opCode_00E0()     // pass your own pixel to display instead of vice versa
 {
-	// set all pixels to 0
-	//uint32_t* dispPixels = disp.pixels;
-	//memset(dispPixels, 0, sizeof(dispPixels));
-	
-
+	memset(gfx, 0, sizeof(gfx));
 }
 
 void chip8::opCode_1NNN()
 {
 	// jump to adress NNN
-	pc = opcode & 0xFFF;
+	pc = opcode & 0x0FFF;
 }
 
 void chip8::opCode_6XNN()
@@ -204,7 +227,7 @@ void chip8::opCode_6XNN()
 	uint8_t i{};
 	i = (opcode & 0x0F00) >> 8;
 	V[i] = (opcode & 0x00FF);
-	pc += 2;
+	
 }
 
 void chip8::opCode_7XNN()
@@ -213,20 +236,19 @@ void chip8::opCode_7XNN()
 	uint8_t i{};
 	i = (opcode & 0x0F00) >> 8;
 	V[i] = V[i] + (opcode & 0x00FF);
-	pc += 2;
 }
 
 void chip8::opCode_ANNN()
 {
 	// Store memoory address NNN in register I
 	I = opcode & 0x0FFF;
-	pc += 2;
 }
 
 void chip8::opCode_DXYN()
 {
 	// Draw a sprite at position VX, VY with N bytes of sprite data starting at the address stored in I
 	// Set VF to 01 if any set pixels are changed to unset, and 00 otherwise
+	
 
 	uint8_t iX{};
 	uint8_t iY{};
@@ -235,10 +257,30 @@ void chip8::opCode_DXYN()
 
 	iX = (opcode & 0x0F00) >> 8;
 	iY = (opcode & 0x00F0) >> 4;
+	unsigned short x = V[iX];
+	unsigned short y = V[iY];
 	height = (opcode & 0x000F);
 	V[0xF] == 0; // Reset VF
+	
 
-	// rest of code
+	V[0xF] = 0;
+	for (int yline = 0; yline < height; yline++)
+	{
+		uint8_t pixel = memory[I + yline];
+		for (int xline = 0; xline < 8; xline++)
+		{
+			if ((pixel & (0x80 >> xline)) != 0)
+			{
+				int pixelIndex = (x + xline + ((y + yline) * 64)) % (64 * 32);
+				if (gfx[pixelIndex] == 0xFFFFFFFF)
+					V[0xF] = 1;
+				gfx[pixelIndex] ^= 0xFFFFFFFF;
+				std::cout << "Drawing pixel at (" << x << ", " << y << ")\n";
+				std::cout << "Pixel data at index: " << pixelIndex << " is now: " << gfx[pixelIndex] << std::endl;
+			}
+		}
+	}
+	drawFlag = true;
 
 }
 
@@ -246,3 +288,5 @@ void chip8::updateTimers()
 {
 
 }
+
+#endif

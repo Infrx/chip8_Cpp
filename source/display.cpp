@@ -1,3 +1,6 @@
+#ifndef DISPLAY_CPP
+#define DISPLAY_CCPP
+
 #include "display.h"
 
 
@@ -54,18 +57,18 @@ void display::close()
     SDL_Quit();
 }
 
-void display::drawGraphics(uint32_t* pixels)
+void display::drawGraphics(const uint32_t* pixels)
 {
-    // Update the texture with new pixel data
+    // knows that pixels is 64 x 32 due to width*size
     SDL_UpdateTexture(texture, nullptr, pixels, CHIP8_WIDTH * sizeof(uint32_t));
 
     // Clear renderer
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Black background
     SDL_RenderClear(renderer);
-
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255); // Black background
     // Copy texture to renderer
     SDL_RenderCopy(renderer, texture, nullptr, nullptr);
 
     // Present renderer
     SDL_RenderPresent(renderer);
 }
+#endif

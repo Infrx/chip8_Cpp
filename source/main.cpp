@@ -1,24 +1,34 @@
-#include <display.cpp>
-#include <chip.cpp>
+#include <display.h>
+#include <chip.h>
+#include <chrono>
 
-display disp;
-chip8 chip;
 
-int main(int argc, char* args[]) {
+
+int main(int argc, char* argv[]) {
     // Initialize SDL and setup window, renderer, and texture
-    if (!disp.init()) {
-        std::cerr << "Failed to initialize!" << std::endl;
+    if (argc != 2) {
+        std::cerr << "Usage:" << argv[0] << " <ROM>\n";
         return -1;
     }
+    display disp;
+    chip8 chip;
 
+    disp.init();
+
+    std::string romPath = "C:\\Users\\mertc\\source\\IBM_Logo.ch8";
+    int cycleDelay = 1;
     // Main loop flag
     bool quit = false;
-    
-    
-    
-    // need to load ROM before emulation starts
+    auto lastCycleTime = std::chrono::high_resolution_clock::now();
+    if (!chip.loadROM(romPath))
+    {
+        std::cerr << "Failed to load ROM\n";
+        return EXIT_FAILURE;
+    }
+    //chip.loadROM(romFilename);
     chip.initialize();
 
+    // need to load ROM before emulation starts // chip8.loadRom something
 
     // Main loop
     while (!quit) {
@@ -28,17 +38,32 @@ int main(int argc, char* args[]) {
                 quit = true;
             }
         }
+        
+        // find dt by lasttime - currenttime
+        auto currentTime = std::chrono::high_resolution_clock::now();
+        float dt = std::chrono::duration<float, std::chrono::milliseconds::period>(currentTime - lastCycleTime).count();
 
-        
-        chip.emulateCycle();
-        //
-        // 
-        
-        if (chip.drawFlag) {            
-            disp.drawGraphics(chip.gfx);
-            chip.drawFlag = false;
+        if (chip.delayTimer > 0){--chip.delayTimer;}
+        if (chip.soundTimer > 0){--chip.soundTimer;}
+
+       
+        bool timeFlag = false;
+        if (dt > cycleDelay)
+        {
+            lastCycleTime = currentTime;
+
+            chip.emulateCycle();
+            timeFlag = true;
         }
 
+        
+        if (chip.drawFlag && timeFlag) 
+        {            
+            disp.drawGraphics(chip.gfx);
+            chip.drawFlag = false;
+            timeFlag = false;
+        }
+        
          
         // Delay to control frame rate
         SDL_Delay(1000 / 60);

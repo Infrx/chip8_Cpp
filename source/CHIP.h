@@ -1,5 +1,8 @@
+#ifndef CHIP_H
+#define CHIP_H
+
 #include <cstdint>
-#include <display.h>
+#include <iostream>
 const unsigned int START_ADDRESS = 0x200;
 const unsigned int FONTSET_SIZE = 80;
 
@@ -10,9 +13,11 @@ public:
 	void initialize();
 	void emulateCycle();
 	bool drawFlag{false};
+	bool loadROM(const std::string& romPath);
 	uint8_t delayTimer{};
 	uint8_t soundTimer{};
 	uint32_t gfx[64 * 32]{};  // 64 x 32 resolution 
+
 private:
 	// memory variables
 	uint8_t memory[4096]{};   // 4kb RAM
@@ -44,3 +49,4 @@ private:
 
 };
 
+#endif
