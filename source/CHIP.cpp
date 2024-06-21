@@ -27,10 +27,16 @@ uint8_t fontset[FONTSET_SIZE] =
 
 
 
+chip8::chip8() 
+{
+	randEngine = std::default_random_engine(static_cast<unsigned long>(std::time(nullptr)));
+	randDist = std::uniform_int_distribution<unsigned int>(0, 255);
+}
+
 void chip8::initialize()
 {
 	pc = START_ADDRESS;// Initialize registers and memory once
-	for(int i = 0; i < 80; ++i)
+	for (int i = 0; i < 80; ++i)
 		memory[i] = fontset[i];
 }
 
@@ -265,7 +271,6 @@ void chip8::opCode_6XNN()
 	uint8_t i{};
 	i = (opcode & 0x0F00) >> 8;
 	V[i] = (opcode & 0x00FF);
-	
 }
 
 void chip8::opCode_7XNN()
@@ -309,22 +314,31 @@ void chip8::opCode_8XY4()
 	uint8_t iX = (opcode & 0x0F00) >> 8;
 	uint8_t iY = (opcode & 0x00F0) >> 4;
 	uint16_t sum = V[iX] + V[iY];
-	
+	V[iX] = sum & 0xFFu; // 0xFF is 255
 	if (sum > 255) { V[0xF] = 0x01; } //check 8bit overflow
 	else { V[0xF] = 0x00;}
 
-	V[iX] = sum & 0xFFu; // 0xFF is 255
+	
 }
 
 void chip8::opCode_8XY5()
 {
 	uint8_t iX = (opcode & 0x0F00) >> 8;
 	uint8_t iY = (opcode & 0x00F0) >> 4;
+	
+	if (V[iX] < V[iY])
+	{ 
+		V[iX] -= V[iY];
+		V[0xF] = 0x00; 
+		
+	}
+	else 
+	{ 
+		V[iX] -= V[iY];
+		V[0xF] = 1;
+	}
 
-	if (V[iX] < V[iY]) { V[0xF] = 0x00; }
-	else { V[0xF] = 1; }
-
-	V[iX] -= V[iY];
+	
 }
 
 void chip8::opCode_8XY6()
@@ -332,8 +346,9 @@ void chip8::opCode_8XY6()
 	uint8_t iX = (opcode & 0x0F00) >> 8;
 	uint8_t iY = (opcode & 0x00F0) >> 4;
 
-	V[iX] = V[iY] >> 1;
-	V[0xF] = V[iY] << 3;
+	bool flag = V[iX] & 1;
+	V[iX]  >>= 1; // extract least significant bit
+	V[0xF] = flag;
 }
 
 void chip8::opCode_8XY7()
@@ -341,10 +356,16 @@ void chip8::opCode_8XY7()
 	uint8_t iX = (opcode & 0x0F00) >> 8;
 	uint8_t iY = (opcode & 0x00F0) >> 4;
 
-	if (V[iY] < V[iX]) { V[0xF] = 0x00; }
-	else { V[0xF] = 1; }
-
-	V[iX] = V[iY] - V[iX];
+	if (V[iY] < V[iX]) 
+	{ 
+		V[iX] = V[iY] - V[iX];
+		V[0xF] = 0x00; 
+	}
+	else 
+	{
+		V[iX] = V[iY] - V[iX];
+		V[0xF] = 1; 
+	}
 }
 
 void chip8::opCode_8XYE()
@@ -352,12 +373,19 @@ void chip8::opCode_8XYE()
 	uint8_t iX = (opcode & 0x0F00) >> 8;
 	uint8_t iY = (opcode & 0x00F0) >> 4;
 
-	V[iX] = V[iY] << 1;
-	V[0xF] = V[iY] << 3;
+	bool flag = V[iX] & 0b10000000;
+	V[iX] <<= 1; // extract least significant bit
+	V[0xF] = flag;
 }
 
 void chip8::opCode_9XY0()
 {
+	uint8_t iX = (opcode & 0x0F00) >> 8;
+	uint8_t iY = (opcode & 0x00F0) >> 4;
+	if (V[iX] != V[iY]) 
+	 { 
+	 pc += 2; 
+	 }
 }
 
 void chip8::opCode_ANNN()
@@ -368,10 +396,17 @@ void chip8::opCode_ANNN()
 
 void chip8::opCode_BNNN()
 {
+	//Jump to address NNN + V0
+	pc = (opcode & 0x0FFF) + V[0];
 }
 
 void chip8::opCode_CXNN()
 {
+	uint8_t iX = (opcode & 0x0F00) >> 8;
+	uint8_t byte = (opcode & 0x00FF);
+
+	uint8_t randomNumber = randDist(randEngine); // Generate random number
+	V[iX] = randomNumber & byte; 
 }
 
 void chip8::opCode_DXYN()
@@ -482,7 +517,8 @@ void chip8::opCode_FX65()
 
 void chip8::updateTimers()
 {
-	
+	if (delayTimer > 0) { --delayTimer; }
+	if (soundTimer > 0) { --soundTimer; }
 }
 
 #endif

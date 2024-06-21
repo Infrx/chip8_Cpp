@@ -26,28 +26,30 @@ int main(int argc, char* argv[]) {
         return EXIT_FAILURE;
     }
     //chip.loadROM(romFilename);
-    chip.initialize();
+    
 
     // need to load ROM before emulation starts // chip8.loadRom something
 
     // Main loop
+    chip.initialize();
+
     while (!quit) {
         // Handle events on queue
+
+        quit = disp.keyPresses(chip.hexpad);  // handle events, key presses
+        /*
         while (SDL_PollEvent(&disp.event) != 0) {
             if (disp.event.type == SDL_QUIT) {
                 quit = true;
             }
         }
-        
+        */
         // find dt by lasttime - currenttime
         auto currentTime = std::chrono::high_resolution_clock::now();
         float dt = std::chrono::duration<float, std::chrono::milliseconds::period>(currentTime - lastCycleTime).count();
 
-        if (chip.delayTimer > 0){--chip.delayTimer;}
-        if (chip.soundTimer > 0){--chip.soundTimer;}
+        chip.updateTimers();
 
-        
-        bool timeFlag = false;
         if (dt > cycleDelay)
         {
             lastCycleTime = currentTime;

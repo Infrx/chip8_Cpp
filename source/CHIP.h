@@ -3,20 +3,28 @@
 
 #include <cstdint>
 #include <iostream>
+#include <chrono>
+#include <random>
+#include <ctime>
+
 const unsigned int START_ADDRESS = 0x200;
 const unsigned int FONTSET_SIZE = 80;
+
+
 
 class chip8
 {
 public:
-	//chip8();  // constructor may not be neccessary use member function instead
+	chip8();
 	void initialize();
 	void emulateCycle();
 	bool drawFlag{false};
 	bool loadROM(const std::string& romPath);
+	void updateTimers();
 	uint8_t delayTimer{};
 	uint8_t soundTimer{};
 	uint32_t gfx[64 * 32]{};  // 64 x 32 resolution 
+	uint8_t hexpad[16]{};
 
 private:
 	// memory variables
@@ -30,11 +38,10 @@ private:
 	uint16_t pc{};  // program counter, 2 bytes due to instructions are also 2 bytes
 	uint16_t stack[16]{};  // for subroutines
 	uint8_t sp{}; // stack pointer
-	uint8_t keypad[16]{};
-	uint16_t opcode; // operand code
+	uint16_t opcode{}; // operand code
 	
-	
-
+	std::default_random_engine randEngine;
+	std::uniform_int_distribution<unsigned int> randDist;
 	
 	// opcodes functions
 	//void opCode_0NNN(); ignore this 
@@ -74,7 +81,7 @@ private:
 	void opCode_FX65();
 
 	//
-	void updateTimers();
+	
 
 };
 

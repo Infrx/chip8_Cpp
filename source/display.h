@@ -8,7 +8,7 @@
 // CHIP-8 display dimensions
 const int CHIP8_WIDTH = 64;
 const int CHIP8_HEIGHT = 32;
-const int SCALE = 10;  // Scaling factor for better visibility
+const int SCALE = 20;  // Scaling factor for better visibility
 
 class display
 {
@@ -16,6 +16,7 @@ public:
 	bool init();
 	void close();
 	void drawGraphics(const uint32_t* pixels);
+	bool keyPresses(uint8_t* hexpad);
 	//void clear();
 	// SDL related variables
 	SDL_Window* window = nullptr;
