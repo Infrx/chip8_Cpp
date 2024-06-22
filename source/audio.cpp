@@ -24,11 +24,11 @@ void Audio::init()
     SDL_AudioSpec desiredSpec;
     SDL_AudioSpec obtainedSpec;
     SDL_zero(desiredSpec);
-    desiredSpec.freq = 75000;              // Sample rate (e.g., 44100 Hz)
-    desiredSpec.format = AUDIO_S16SYS;     // Signed 16-bit samples in system byte order
-    desiredSpec.channels = 2;              // Mono (1 channel)
-    desiredSpec.samples = 4096;            // Buffer size (in samples)
-    desiredSpec.callback = audioCallback;  // Callback function for audio processing
+    desiredSpec.freq = 75000;              
+    desiredSpec.format = AUDIO_S16SYS;     
+    desiredSpec.channels = 2;              
+    desiredSpec.samples = 4096;            
+    desiredSpec.callback = audioCallback;  
     desiredSpec.userdata = nullptr;
     audioDevice = SDL_OpenAudioDevice(nullptr, 0, &desiredSpec, &obtainedSpec, 0);
     if (audioDevice == 0) {
