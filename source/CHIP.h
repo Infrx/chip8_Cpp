@@ -7,8 +7,10 @@
 #include <random>
 #include <ctime>
 
+const unsigned int FONT_START_ADDRESS = 0x50;
 const unsigned int START_ADDRESS = 0x200;
 const unsigned int FONTSET_SIZE = 80;
+const double FRAME_DURATION = 20;
 
 
 
@@ -21,10 +23,12 @@ public:
 	bool drawFlag{false};
 	bool loadROM(const std::string& romPath);
 	void updateTimers();
+	void updateKeyStates();
 	uint8_t delayTimer{};
 	uint8_t soundTimer{};
 	uint32_t gfx[64 * 32]{};  // 64 x 32 resolution 
 	uint8_t hexpad[16]{};
+	uint8_t tempHexpad[16];
 
 private:
 	// memory variables
@@ -42,6 +46,7 @@ private:
 	
 	std::default_random_engine randEngine;
 	std::uniform_int_distribution<unsigned int> randDist;
+
 	
 	// opcodes functions
 	//void opCode_0NNN(); ignore this 
@@ -79,7 +84,8 @@ private:
 	void opCode_FX33();
 	void opCode_FX55();
 	void opCode_FX65();
-
+	int compareKeyStates(uint8_t* tempKeys, uint8_t* currentKeys);
+	
 	//
 	
 

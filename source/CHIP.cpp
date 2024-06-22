@@ -42,28 +42,31 @@ void chip8::initialize()
 
 void chip8::emulateCycle()
 {
-	// Fetch Opcode
-	opcode = memory[pc] << 8 | memory[pc + 1]; // stores 2 subsequent memory adress
-	pc += 2;
-	//
-	// Decode Opcode - Use Switch statements and dont forget to add break after each opcode is executed
-
-	switch (opcode & 0xF000)	// Check first nibble
+	
+	for (int c = 0; c <= 11; ++c)
 	{
-		
+		// Fetch Opcode
+		opcode = memory[pc] << 8 | memory[pc + 1]; // stores 2 subsequent memory adress
+		pc += 2;
+		//
+		// Decode Opcode - Use Switch statements and dont forget to add break after each opcode is executed
+
+		switch (opcode & 0xF000)	// Check first nibble
+		{
+
 		case 0x0000:// 0NNN or 00EE or 00E0
 			//check fourth nibble
 			switch (opcode & 0x0FF)
 			{
-				case 0x00E0://00E0
-					opCode_00E0();
-					break;
-				case 0x00EE:// 00EE
-					opCode_00EE();
-					break;
-				default:// 0NNN
-					//call function
-					break;
+			case 0x00E0://00E0
+				opCode_00E0();
+				break;
+			case 0x00EE:// 00EE
+				opCode_00EE();
+				break;
+			default:// 0NNN
+				//call function
+				break;
 			}
 			break;
 		case 0x1000:// 1NNN
@@ -105,12 +108,12 @@ void chip8::emulateCycle()
 		case 0xE000:// EX9E or EXA1
 			switch (opcode & 0x000F)
 			{
-				case 0x000E:// EX9E
-					opCode_EX9E();
-					break;
-				case 0x0001:// EXA1
-					opCode_EXA1();
-					break;
+			case 0x000E:// EX9E
+				opCode_EX9E();
+				break;
+			case 0x0001:// EXA1
+				opCode_EXA1();
+				break;
 			}
 			break;
 			//call function
@@ -118,78 +121,79 @@ void chip8::emulateCycle()
 		case 0x8000:// 8XY(0 to 7 and E)
 			switch (opcode & 0x000F)
 			{
-				case 0x0000:// 8XY0
-					opCode_8XY0();
-					break;
-				case 0x0001:// 8XY1
-					opCode_8XY1();
-					break;
-				case 0x0002:// 8XY2
-					opCode_8XY2();
-					break;
-				case 0x0003:// 8XY3
-					opCode_8XY3();
-					break;
-				case 0x0004:// 8XY4
-					opCode_8XY4();
-					break;
-				case 0x0005:// 8XY5
-					opCode_8XY5();
-					break;
-				case 0x0006:// 8XY6
-					opCode_8XY6();
-					break;
-				case 0x0007:// 8XY7
-					opCode_8XY7();
-					break;
-				case 0x000E:// 8XYE
-					opCode_8XYE();
-					break;
+			case 0x0000:// 8XY0
+				opCode_8XY0();
+				break;
+			case 0x0001:// 8XY1
+				opCode_8XY1();
+				break;
+			case 0x0002:// 8XY2
+				opCode_8XY2();
+				break;
+			case 0x0003:// 8XY3
+				opCode_8XY3();
+				break;
+			case 0x0004:// 8XY4
+				opCode_8XY4();
+				break;
+			case 0x0005:// 8XY5
+				opCode_8XY5();
+				break;
+			case 0x0006:// 8XY6
+				opCode_8XY6();
+				break;
+			case 0x0007:// 8XY7
+				opCode_8XY7();
+				break;
+			case 0x000E:// 8XYE
+				opCode_8XYE();
+				break;
 			}
 			break;
 		case 0xF000:// FX
-			switch(opcode & 0x00FF)
+			switch (opcode & 0x00FF)
 			{
-				case 0x0007: // FX07
-					opCode_FX07();
-					break;
-				case 0x000A: // FX0A
-					opCode_FX0A();
-					break;
-				case 0x0015: // FX15
-					opCode_FX15();
-					break;
-				case 0x0018: // FX18
-					opCode_FX18();
-					break;
-				case 0x001E: // FX1E
-					opCode_FX1E();
-					break;
-				case 0x0029: // FX29
-					opCode_FX29();
-					break;
-				case 0x0033: // FX33
-					opCode_FX33();
-					break;
-				case 0x0055: // FX55
-					opCode_FX55();
-					break;
-				case 0x0065: // FX65
-					opCode_FX65();
-					break;
+			case 0x0007: // FX07
+				opCode_FX07();
+				break;
+			case 0x000A: // FX0A
+				opCode_FX0A();
+				break;
+			case 0x0015: // FX15
+				opCode_FX15();
+				break;
+			case 0x0018: // FX18
+				opCode_FX18();
+				break;
+			case 0x001E: // FX1E
+				opCode_FX1E();
+				break;
+			case 0x0029: // FX29
+				opCode_FX29();
+				break;
+			case 0x0033: // FX33
+				opCode_FX33();
+				break;
+			case 0x0055: // FX55
+				opCode_FX55();
+				break;
+			case 0x0065: // FX65
+				opCode_FX65();
+				break;
 			}
 			break;
-		//switch (opcode & ) // Check for ?
+			//switch (opcode & ) // Check for ?
 
-		
+
+		}
 	}
 
 
 
+		// Execute Opcode
 
-	// Execute Opcode
-
-	// Update timers
+		// Update timers
+	
 }
 
 bool chip8::loadROM(const std::string& romPath) {
@@ -337,8 +341,6 @@ void chip8::opCode_8XY5()
 		V[iX] -= V[iY];
 		V[0xF] = 1;
 	}
-
-	
 }
 
 void chip8::opCode_8XY6()
@@ -425,7 +427,7 @@ void chip8::opCode_DXYN()
 	unsigned short x = V[iX];
 	unsigned short y = V[iY];
 	height = (opcode & 0x000F);
-	V[0xF] == 0; // Reset VF
+	V[0xF] = 0; // Reset VF
 	
 
 	V[0xF] = 0;
@@ -449,26 +451,48 @@ void chip8::opCode_DXYN()
 
 void chip8::opCode_EX9E()
 {
+	uint8_t iX = (opcode & 0x0F00) >> 8;
+	if (hexpad[V[iX]] == 1)
+		pc += 2;
 }
 
 void chip8::opCode_EXA1()
 {
+	uint8_t iX = (opcode & 0x0F00) >> 8;
+	if (hexpad[V[iX]] == 0)
+		pc += 2;
 }
 
 void chip8::opCode_FX07()
 {
+	uint8_t iX = (opcode & 0x0F00) >> 8;
+	V[iX] = delayTimer;
 }
 
 void chip8::opCode_FX0A()
 {
+	// Wait for keypress and store it in VX
+	//std::cout << "hello1";
+	uint8_t iX = (opcode & 0x0F00) >> 8;
+	int iKey = compareKeyStates(tempHexpad, hexpad);
+	if (iKey != -1)
+	{
+		V[iX] = iKey;
+	}
+	else
+		pc -= 2;
 }
 
 void chip8::opCode_FX15()
 {
+	uint8_t iX = (opcode & 0x0F00) >> 8;
+	delayTimer = V[iX];
 }
 
 void chip8::opCode_FX18()
 {
+	uint8_t iX = (opcode & 0x0F00) >> 8;
+	soundTimer = V[iX];
 }
 
 void chip8::opCode_FX1E()
@@ -479,6 +503,8 @@ void chip8::opCode_FX1E()
 
 void chip8::opCode_FX29()
 {
+	uint8_t iX = (opcode & 0x0F00) >> 8;
+	I = FONT_START_ADDRESS + (5 * V[iX]);
 }
 
 void chip8::opCode_FX33()
@@ -498,9 +524,7 @@ void chip8::opCode_FX55()
 		memory[I] = V[i];
 		++I;  
 		// I is set to I + X + 1 after operation
-
 	}
-	
 }
 
 void chip8::opCode_FX65()
@@ -512,7 +536,26 @@ void chip8::opCode_FX65()
 		++I;
 		// I is set to I + X + 1 after operation
 	}
-	
+}
+
+int chip8::compareKeyStates(uint8_t* tempKeys, uint8_t* currentKey)
+{
+	//std::cout << "hello1";
+
+	for (uint8_t i = 0; i <= 15; ++i)
+	{
+		if (tempKeys[i] == 1 && currentKey[i] == 0)
+		{
+			std::cout << "hello1";
+			return i;
+		}
+	}
+	return -1;
+}
+
+void chip8::updateKeyStates()
+{
+	memcpy(tempHexpad, hexpad, sizeof(hexpad));
 }
 
 void chip8::updateTimers()

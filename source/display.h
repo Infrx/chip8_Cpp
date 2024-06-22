@@ -17,15 +17,13 @@ public:
 	void close();
 	void drawGraphics(const uint32_t* pixels);
 	bool keyPresses(uint8_t* hexpad);
-	//void clear();
-	// SDL related variables
+	
 	SDL_Window* window = nullptr;
 	SDL_Renderer* renderer = nullptr;
 	SDL_Texture* texture = nullptr;
 	uint32_t pixels[CHIP8_WIDTH * CHIP8_HEIGHT]{0};
 	SDL_Event event;
 
-	//functions
 };
 
 #endif
