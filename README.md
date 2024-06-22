@@ -1,6 +1,6 @@
 # chip8_Cpp
 
-## Table of contents
+# Table of contents
 
   * [Introduction](#introduction)
   * [Features](#features)
@@ -10,11 +10,20 @@
 
 A chip8 interpretor coded in C++
 
-# Features
+## Features
 
-- All basic chip8 instructions [x]
-- Working hexpad [x]
-- Audio [x]
-- Quirks
-  
-# Tests
+ - [X] All basic chip8 instructions 
+ - [X] Working hexpad 
+ - [X] Audio
+ - [ ] Quirks 
+## Tests
+### Timendus Tests:
+
+- [X] CHIP-8 splash screen
+- [X] IBM logo
+- [X] Corax+ opcode test
+- [X] Flags test
+- [ ] Quirks test
+- [X] Keypad test
+- [X] Beep test
+- [ ] Scrolling test (Not applicable to CHIP8)
