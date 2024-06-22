@@ -27,3 +27,8 @@ A chip8 interpretor coded in C++
 - [X] Keypad test
 - [X] Beep test
 - [ ] Scrolling test (Not applicable to CHIP8)
+
+## To do list
+* [ ] Implement function pointers
+* [ ] Easy to read code
+* [ ] Implement CHIP8 quirks
