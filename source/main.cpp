@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
     disp.init();
     audio.init();
 
-    std::string romPath = "C:\\Users\\mertc\\source\\brix.ch8";
+    std::string romPath = "C:\\Users\\mertc\\source\\5-quirks.ch8";
     int cycleDelay = 10;
     // Main loop flag
     bool quit = false;

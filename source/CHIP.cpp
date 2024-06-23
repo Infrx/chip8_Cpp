@@ -43,7 +43,7 @@ void chip8::initialize()
 void chip8::emulateCycle()
 {
 	
-	for (int c = 0; c <= 11; ++c)
+	for (int c = 0; c <= 10; ++c)
 	{
 		// Fetch Opcode
 		opcode = memory[pc] << 8 | memory[pc + 1]; // stores 2 subsequent memory adress
@@ -103,7 +103,15 @@ void chip8::emulateCycle()
 			opCode_ANNN();
 			break;
 		case 0xD000:// DXYN
-			opCode_DXYN();
+			if(DISP_WAIT == 1)
+			{
+				if (!c)
+					opCode_DXYN();
+				else
+					pc -= 2;
+			}
+			else
+				opCode_DXYN();
 			break;
 		case 0xE000:// EX9E or EXA1
 			switch (opcode & 0x000F)
@@ -297,6 +305,7 @@ void chip8::opCode_8XY1()
 	uint8_t iX = (opcode & 0x0F00) >> 8;
 	uint8_t iY = (opcode & 0x00F0) >> 4;
 	V[iX] = (V[iX] | V[iY]);
+	V[0xF] = 0;
 }
 
 void chip8::opCode_8XY2()
@@ -304,6 +313,7 @@ void chip8::opCode_8XY2()
 	uint8_t iX = (opcode & 0x0F00) >> 8;
 	uint8_t iY = (opcode & 0x00F0) >> 4;
 	V[iX] = (V[iX] & V[iY]);
+	V[0xF] = 0;
 }
 
 void chip8::opCode_8XY3()
@@ -311,6 +321,7 @@ void chip8::opCode_8XY3()
 	uint8_t iX = (opcode & 0x0F00) >> 8;
 	uint8_t iY = (opcode & 0x00F0) >> 4;
 	V[iX] = (V[iX] ^ V[iY]);
+	V[0xF] = 0;
 }
 
 void chip8::opCode_8XY4()
@@ -349,7 +360,8 @@ void chip8::opCode_8XY6()
 	uint8_t iY = (opcode & 0x00F0) >> 4;
 
 	bool flag = V[iX] & 1;
-	V[iX]  >>= 1; // extract least significant bit
+	//V[iX]  >>= 1; // shifting quirk ON
+	V[iX] = V[iY] >> 1;
 	V[0xF] = flag;
 }
 
@@ -376,7 +388,8 @@ void chip8::opCode_8XYE()
 	uint8_t iY = (opcode & 0x00F0) >> 4;
 
 	bool flag = V[iX] & 0b10000000;
-	V[iX] <<= 1; // extract least significant bit
+	//V[iX] <<= 1; // shifting quirk ON
+	V[iX] = V[iY] << 1;
 	V[0xF] = flag;
 }
 
@@ -424,27 +437,30 @@ void chip8::opCode_DXYN()
 
 	iX = (opcode & 0x0F00) >> 8;
 	iY = (opcode & 0x00F0) >> 4;
-	unsigned short x = V[iX];
-	unsigned short y = V[iY];
+	unsigned short x = V[iX] % 64;
+	unsigned short y = V[iY] % 32;
 	height = (opcode & 0x000F);
 	V[0xF] = 0; // Reset VF
 	
-
-	V[0xF] = 0;
-	for (int yline = 0; yline < height; yline++)
+	for (int yline = 0; yline < height; yline++) 
 	{
-		uint8_t pixel = memory[I + yline];
-		for (int xline = 0; xline < 8; xline++)
+		pixel = mem_read(I + yline);
+		for (int xline = 0; xline < 8; xline++) 
 		{
-			if ((pixel & (0x80 >> xline)) != 0)
+			if ((pixel & (0x80 >> xline)) != 0) 
 			{
-				int pixelIndex = (x + xline + ((y + yline) * 64)) % (64 * 32);
-				if (gfx[pixelIndex] == 0xFFFFFFFF)
+				int xPos = (x + xline) % 64;
+				int yPos = (y + yline) % 32;
+
+				if (gfx[xPos + (yPos * 64)] == 0xFFFFFFFF)
+				{
 					V[0xF] = 1;
-				gfx[pixelIndex] ^= 0xFFFFFFFF;
+				}
+				gfx[xPos + (yPos * 64)] ^= 0xFFFFFFFF;
 			}
 		}
 	}
+	
 	drawFlag = true;
 
 }
@@ -452,14 +468,16 @@ void chip8::opCode_DXYN()
 void chip8::opCode_EX9E()
 {
 	uint8_t iX = (opcode & 0x0F00) >> 8;
-	if (hexpad[V[iX]] == 1)
+	//V[iX] = (V[iX] & 0xF);
+	if (hexpad[(V[iX] & 0xF)] == 1)
 		pc += 2;
 }
 
 void chip8::opCode_EXA1()
 {
 	uint8_t iX = (opcode & 0x0F00) >> 8;
-	if (hexpad[V[iX]] == 0)
+	//V[iX] = V[iX] & 0xF;
+	if (hexpad[(V[iX] & 0xF)] == 0)
 		pc += 2;
 }
 
@@ -504,16 +522,16 @@ void chip8::opCode_FX1E()
 void chip8::opCode_FX29()
 {
 	uint8_t iX = (opcode & 0x0F00) >> 8;
-	I = FONT_START_ADDRESS + (5 * V[iX]);
+	I = FONT_START_ADDRESS + (5 * (V[iX] & 0xF));
 }
 
 void chip8::opCode_FX33()
 {
 	uint8_t iX = (opcode & 0x0F00) >> 8;
 
-	memory[I] = V[iX] / 100;
-	memory[I + 1] = (V[iX] / 10) % 10;
-	memory[I + 2] = V[iX] % 10;
+	mem_write(I_pro(), V[iX] / 100);
+	mem_write(I_pro() + 1, (V[iX] / 10) % 10);
+	mem_write(I_pro() + 2, V[iX] % 10);
 }
 
 void chip8::opCode_FX55()
@@ -521,7 +539,7 @@ void chip8::opCode_FX55()
 	uint8_t iX = (opcode & 0x0F00) >> 8;
 	for (uint8_t i = 0; i <= iX; i++)
 	{
-		memory[I] = V[i];
+		mem_write(I, V[i]);
 		++I;  
 		// I is set to I + X + 1 after operation
 	}
@@ -532,7 +550,7 @@ void chip8::opCode_FX65()
 	uint8_t iX = (opcode & 0x0F00) >> 8;
 	for (uint8_t i = 0; i <= iX; i++)
 	{
-		V[i] = memory[I];
+		V[i] = mem_read(I_pro());
 		++I;
 		// I is set to I + X + 1 after operation
 	}
@@ -551,6 +569,21 @@ int chip8::compareKeyStates(uint8_t* tempKeys, uint8_t* currentKey)
 		}
 	}
 	return -1;
+}
+
+uint8_t chip8::mem_read(const uint16_t adr)
+{
+	return memory[adr & 0xfff];
+}
+
+void chip8::mem_write(const uint16_t adr, uint8_t value)
+{
+	memory[adr & 0xfff] = value;
+}
+
+uint16_t chip8::I_pro()
+{
+	return this->I & 0xFFF;
 }
 
 void chip8::updateKeyStates()

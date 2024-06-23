@@ -7,11 +7,11 @@
 #include <random>
 #include <ctime>
 
-const unsigned int FONT_START_ADDRESS = 0x50;
+const unsigned int FONT_START_ADDRESS = 0x0;
 const unsigned int START_ADDRESS = 0x200;
 const unsigned int FONTSET_SIZE = 80;
-const double FRAME_DURATION = 20;
-
+const double FRAME_DURATION = 16;
+const bool DISP_WAIT = 1; // Display wait quirk
 
 
 class chip8
@@ -86,8 +86,11 @@ private:
 	void opCode_FX65();
 	int compareKeyStates(uint8_t* tempKeys, uint8_t* currentKeys);
 	
-	//
-	
+	//OOB functions
+
+	uint8_t mem_read(const uint16_t adr);
+	void mem_write(const uint16_t adr, uint8_t value);
+	uint16_t I_pro(); // OOB protectd I
 
 };
 
