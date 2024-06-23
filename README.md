@@ -29,6 +29,6 @@ A chip8 interpretor coded in C++
 - [ ] Scrolling test (Not applicable to CHIP8)
 
 ## To do list
-* [ ] Implement function pointers
+* [ ] ~~.Implement function pointers~~. (switch case method might be better for implementing cycle accuracy in the future)
 * [ ] Easy to read code
 * [ ] Implement CHIP8 quirks
