@@ -15,7 +15,7 @@ A chip8 interpretor coded in C++
  - [X] All basic chip8 instructions 
  - [X] Working hexpad 
  - [X] Audio
- - [ ] Quirks 
+ - [X] Quirks 
 ## Tests
 ### Timendus Tests:
 
@@ -23,12 +23,16 @@ A chip8 interpretor coded in C++
 - [X] IBM logo
 - [X] Corax+ opcode test
 - [X] Flags test
-- [ ] Quirks test
+- [X] Quirks test
 - [X] Keypad test
 - [X] Beep test
 - [ ] Scrolling test (Not applicable to CHIP8)
 
+### Other Tests
+
+- [X] Oout of bonds tests
+
 ## To do list
 * [ ] ~~.Implement function pointers~~. (switch case method might be better for implementing cycle accuracy in the future)
 * [ ] Easy to read code
-* [ ] Implement CHIP8 quirks
+* [X] ~~.Implement CHIP8 quirks~~.
