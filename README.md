@@ -30,7 +30,7 @@ A chip8 interpretor coded in C++
 
 ### Other Tests
 
-- [X] Oout of bonds tests
+- [X] Out of bonds tests
 
 ## To do list
 * [ ] ~~.Implement function pointers~~. (switch case method might be better for implementing cycle accuracy in the future)
