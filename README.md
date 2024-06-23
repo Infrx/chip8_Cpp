@@ -33,6 +33,6 @@ A chip8 interpretor coded in C++
 - [X] Out of bonds tests
 
 ## To do list
-* [ ] ~~.Implement function pointers~~. (switch case method might be better for implementing cycle accuracy in the future)
+* [ ] ~~Implement function pointers~~ (switch case method might be better for implementing cycle accuracy in the future)
 * [ ] Easy to read code
-* [X] ~~.Implement CHIP8 quirks~~.
+* [X] ~~Implement CHIP8 quirks~~
