@@ -305,7 +305,8 @@ void chip8::opCode_8XY1()
 	uint8_t iX = (opcode & 0x0F00) >> 8;
 	uint8_t iY = (opcode & 0x00F0) >> 4;
 	V[iX] = (V[iX] | V[iY]);
-	V[0xF] = 0;
+	if (VF_RESET == 1)
+		V[0xF] = 0;
 }
 
 void chip8::opCode_8XY2()
@@ -313,7 +314,8 @@ void chip8::opCode_8XY2()
 	uint8_t iX = (opcode & 0x0F00) >> 8;
 	uint8_t iY = (opcode & 0x00F0) >> 4;
 	V[iX] = (V[iX] & V[iY]);
-	V[0xF] = 0;
+	if (VF_RESET == 1)
+		V[0xF] = 0;
 }
 
 void chip8::opCode_8XY3()
@@ -321,7 +323,8 @@ void chip8::opCode_8XY3()
 	uint8_t iX = (opcode & 0x0F00) >> 8;
 	uint8_t iY = (opcode & 0x00F0) >> 4;
 	V[iX] = (V[iX] ^ V[iY]);
-	V[0xF] = 0;
+	if (VF_RESET == 1)
+		V[0xF] = 0;
 }
 
 void chip8::opCode_8XY4()
@@ -360,8 +363,10 @@ void chip8::opCode_8XY6()
 	uint8_t iY = (opcode & 0x00F0) >> 4;
 
 	bool flag = V[iX] & 1;
-	//V[iX]  >>= 1; // shifting quirk ON
-	V[iX] = V[iY] >> 1;
+	if (SHIFTING == 1)
+		V[iX]  >>= 1; // shifting quirk ON
+	if (SHIFTING == 0)
+		V[iX] = V[iY] >> 1;
 	V[0xF] = flag;
 }
 
@@ -388,8 +393,10 @@ void chip8::opCode_8XYE()
 	uint8_t iY = (opcode & 0x00F0) >> 4;
 
 	bool flag = V[iX] & 0b10000000;
-	//V[iX] <<= 1; // shifting quirk ON
-	V[iX] = V[iY] << 1;
+	if (SHIFTING == 1)
+		V[iX] <<= 1; // shifting quirk ON
+	if (SHIFTING == 0)
+		V[iX] = V[iY] << 1;
 	V[0xF] = flag;
 }
 
@@ -411,8 +418,11 @@ void chip8::opCode_ANNN()
 
 void chip8::opCode_BNNN()
 {
-	//Jump to address NNN + V0
-	pc = (opcode & 0x0FFF) + V[0];
+	uint8_t iX = (opcode & 0x0F00) >> 8;
+	if (JUMPING == 1)
+		pc = (opcode & 0x0FFF) + V[iX];
+	if (JUMPING == 0)
+		pc = (opcode & 0x0FFF) + V[0];
 }
 
 void chip8::opCode_CXNN()
@@ -441,22 +451,49 @@ void chip8::opCode_DXYN()
 	unsigned short y = V[iY] % 32;
 	height = (opcode & 0x000F);
 	V[0xF] = 0; // Reset VF
-	
-	for (int yline = 0; yline < height; yline++) 
+	if(CLIPPING == 1)
 	{
-		pixel = mem_read(I + yline);
-		for (int xline = 0; xline < 8; xline++) 
+		for (int yline = 0; yline < height; yline++)
 		{
-			if ((pixel & (0x80 >> xline)) != 0) 
+			pixel = mem_read(I + yline);
+			for (int xline = 0; xline < 8; xline++)
 			{
-				int xPos = (x + xline) % 64;
-				int yPos = (y + yline) % 32;
-
-				if (gfx[xPos + (yPos * 64)] == 0xFFFFFFFF)
+				if ((pixel & (0x80 >> xline)) != 0)  // If the current pixel is ON
 				{
-					V[0xF] = 1;
+					int xPos = (x + xline); //% 64;
+					int yPos = (y + yline); //% 32;
+					if (xPos < 64 && yPos < 32)
+					{
+						if (gfx[xPos + (yPos * 64)] == 0xFFFFFFFF)
+						{
+							V[0xF] = 1;
+						}
+						gfx[xPos + (yPos * 64)] ^= 0xFFFFFFFF;
+					}
+
 				}
-				gfx[xPos + (yPos * 64)] ^= 0xFFFFFFFF;
+			}
+		}
+	}
+
+	if (CLIPPING == 0)
+	{
+		for (int yline = 0; yline < height; yline++)
+		{
+			pixel = mem_read(I + yline);
+			for (int xline = 0; xline < 8; xline++)
+			{
+				if ((pixel & (0x80 >> xline)) != 0)
+				{
+					int xPos = (x + xline) % 64;
+					int yPos = (y + yline) % 32;
+
+					if (gfx[xPos + (yPos * 64)] == 0xFFFFFFFF)
+					{
+						V[0xF] = 1;
+					}
+					gfx[xPos + (yPos * 64)] ^= 0xFFFFFFFF;
+				}
 			}
 		}
 	}
@@ -537,22 +574,43 @@ void chip8::opCode_FX33()
 void chip8::opCode_FX55()
 {
 	uint8_t iX = (opcode & 0x0F00) >> 8;
-	for (uint8_t i = 0; i <= iX; i++)
+	if (MEMORY == 1)
 	{
-		mem_write(I, V[i]);
-		++I;  
-		// I is set to I + X + 1 after operation
+		for (uint8_t i = 0; i <= iX; i++)
+		{
+			mem_write(I, V[i]);
+			++I;
+			// I is set to I + X + 1 after operation
+		}
+	}
+	if (MEMORY == 0)
+	{
+		for (uint8_t i = 0; i <= iX; i++)
+		{
+			mem_write(I+i, V[i]);
+		}
 	}
 }
 
 void chip8::opCode_FX65()
 {
 	uint8_t iX = (opcode & 0x0F00) >> 8;
-	for (uint8_t i = 0; i <= iX; i++)
+	if (MEMORY == 1)
 	{
-		V[i] = mem_read(I_pro());
-		++I;
-		// I is set to I + X + 1 after operation
+		for (uint8_t i = 0; i <= iX; i++)
+		{
+			V[i] = mem_read(I_pro());
+			++I;
+			// I is set to I + X + 1 after operation
+		}
+	}
+	if (MEMORY == 0)
+	{
+		for (uint8_t i = 0; i <= iX; i++)
+		{
+			V[i] = mem_read(I_pro() + i);
+			// I is set to I + X + 1 after operation
+		}
 	}
 }
 

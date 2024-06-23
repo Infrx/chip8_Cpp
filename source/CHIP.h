@@ -10,8 +10,14 @@
 const unsigned int FONT_START_ADDRESS = 0x0;
 const unsigned int START_ADDRESS = 0x200;
 const unsigned int FONTSET_SIZE = 80;
-const double FRAME_DURATION = 16;
-const bool DISP_WAIT = 1; // Display wait quirk
+const double FRAME_DURATION = 1000/60;
+//Quirks 
+const bool VF_RESET = 1;	// chip8 default = 1
+const bool MEMORY = 1;		// chip8 default = 1
+const bool DISP_WAIT = 1;	// chip8 default = 1
+const bool CLIPPING = 1;	// chip8 default = 1
+const bool SHIFTING = 0;	// chip8 default = 0
+const bool JUMPING = 0;		// chip8 default = 0
 
 
 class chip8
