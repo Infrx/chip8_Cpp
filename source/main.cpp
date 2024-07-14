@@ -38,20 +38,8 @@ int main(int argc, char* argv[]) {
 
     while (!quit) {
         frameStart = SDL_GetTicks();
-        
-    
-
         quit = disp.keyPresses(chip.hexpad);  // handle events, key presses
-       
-
-        
-
-        //if (dt > cycleDelay)
-        //{
-            //lastCycleTime = currentTime;
-            chip.emulateCycle();
-            
-        //}
+        chip.emulateCycle();
         chip.updateTimers();
         if (chip.soundTimer > 0)
         {
@@ -65,17 +53,12 @@ int main(int argc, char* argv[]) {
             disp.drawGraphics(chip.gfx);
             chip.drawFlag = false;
         }
-        
         chip.updateKeyStates();
-     
-
-       frameTime = SDL_GetTicks() - frameStart;
+        frameTime = SDL_GetTicks() - frameStart;
         if (frameTime < FRAME_DURATION)
         {
             SDL_Delay(FRAME_DURATION - frameTime);
         }
-   
-        
     }
     disp.close();
     return 0;
