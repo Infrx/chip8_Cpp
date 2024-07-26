@@ -34,5 +34,5 @@ A chip8 interpretor coded in C++
 
 ## To do list
 * [ ] ~~Implement function pointers~~ (switch case method might be better for implementing cycle accuracy in the future)
-* [ ] Easy to read code
+* [ ] Add showcase section in readme
 * [X] ~~Implement CHIP8 quirks~~
