@@ -15,7 +15,8 @@ A chip8 interpretor coded in C++
  - [X] All basic chip8 instructions 
  - [X] Working hexpad 
  - [X] Audio
- - [X] Quirks 
+ - [X] Quirks
+       
 ## Tests
 ### Timendus Tests:
 
