@@ -1,14 +1,16 @@
 # chip8_Cpp
-
 # Table of contents
 
   * [Introduction](#introduction)
   * [Features](#features)
   * [Tests](#tests)
 
-# Introduction
+## Introduction
 
-A chip8 interpretor coded in C++
+A chip8 interpreter coded in C++
+
+## Showcase
+
 
 ## Features
 
