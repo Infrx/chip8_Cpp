@@ -3,8 +3,8 @@
 
   * [Introduction](#introduction)
   * [Dependencies for Running Locally](#Dependencies for Running Locally)
-  * [Basic Build Instructions](#Basic Build Instructions)
-  * [Showcase](#Showcase)
+  * [Basic Build Instructions](#basic build instructions)
+  * [Showcase](#showcase)
   * [Features](#features)
   * [Tests](#tests)
 
