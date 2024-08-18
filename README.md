@@ -47,7 +47,9 @@ cmake .. & make
 ```
 ## Showcase
 
-<img src="brix.gif"/>
+Brix          |   Tetris 
+:-------------------------:|:-------------------------:
+<img src="brix.gif"/>  |  <img src="tetris.gif"/>
 
 ## Features
 
