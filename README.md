@@ -47,7 +47,7 @@ cmake .. & make
 ```
 ## Showcase
 
-
+<img src="brix.gif"/>
 
 ## Features
 
