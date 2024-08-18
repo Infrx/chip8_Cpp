@@ -6,6 +6,7 @@
 #include <chrono>
 #include <random>
 #include <ctime>
+#include <cstring>
 
 const unsigned int FONT_START_ADDRESS = 0x0;
 const unsigned int START_ADDRESS = 0x200;

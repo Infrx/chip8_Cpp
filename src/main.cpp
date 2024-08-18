@@ -1,8 +1,9 @@
-#include <display.h>
-#include <chip.h>
+#include "display.h"
+#include "CHIP.h"
 #include <chrono>
-#include <audio.h>
+#include "audio.h"
 #include <thread>
+
 
 int main(int argc, char* argv[]) {
     // Initialize SDL and setup window, renderer, and texture
@@ -15,8 +16,8 @@ int main(int argc, char* argv[]) {
     Audio audio;
     disp.init();
     audio.init();
-
-    std::string romPath = "C:\\Users\\mertc\\source\\5-quirks.ch8";
+    std::string romFilename = argv[1];
+    std::string romPath = "../roms/" + romFilename;
     int cycleDelay = 10;
     // Main loop flag
     bool quit = false;
