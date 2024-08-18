@@ -2,8 +2,8 @@
 # Table of contents
 
   * [Introduction](#introduction)
-  * [Dependencies for Running Locally](#Dependencies for Running Locally)
-  * [Basic Build Instructions](#basic build instructions)
+  * [Dependencies for Running Locally](#dependencies-for-running-locally)
+  * [Basic Build Instructions](#basic-build-instructions)
   * [Showcase](#showcase)
   * [Features](#features)
   * [Tests](#tests)
