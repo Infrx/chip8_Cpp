@@ -33,7 +33,7 @@ A chip8 interpreter coded in C++
 ```bash
 https://github.com/Infrx/chip8_Cpp
 ```
-3. Make a build directory in the top level directory:
+2. Make a build directory in the top level directory:
 ```bash
 mkdir build && cd build
 ```
@@ -41,13 +41,13 @@ mkdir build && cd build
 ```bash
 cmake .. & make
 ```
-5. Run it:
+4. Run it:
 ```bash
 ./chip8 brix.ch8
 ```
 ## Showcase
 
-
+<img src="brix.gif"/>
 
 ## Features
 
